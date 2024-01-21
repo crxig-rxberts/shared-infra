@@ -1,6 +1,6 @@
 # Payment Service and BISA Service
 
-This repository contains two services, Payment Service and Transaction Service, that perform the following tasks:
+This repository contains two services, Payment Service and BISA Service, that perform the following tasks:
 
 ## Payment Service
 
