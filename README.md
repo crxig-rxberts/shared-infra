@@ -20,8 +20,10 @@ aws_access_key_id = YOUR_ACCESS_KEY_ID
 aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
 ```
 
-Now from each of the services infra/ directories you can perform the following to deploy a service. Remeber to update the BISA IP from within Payment Service's AppConfig class.
+Now from each of the services infra/ directories you can perform the following to deploy a service. 
 
 `terraform init`
 
 `terraform apply --auto-approve`
+
+Remeber to update the BISA IP from within Payment Service's AppConfig class.
