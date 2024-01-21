@@ -4,7 +4,7 @@ This repository contains two services, Payment Service and BISA Service, that pe
 
 ## Payment Service
 
-The Payment Service is responsible for processing payment transactions for end consumer by communicating with a payment provider BISA. It accepts payment requests and interacts with BISA to authenticate, authorise and settle transactions. A record of all transactions is kept, with sensisitive data obsfucated.
+The Payment Service is responsible for processing payment transactions for end consumers by communicating with a payment provider BISA. It accepts payment requests and interacts with BISA to authenticate, authorise and settle transactions. A record of all transactions is kept, with sensisitive data obsfucated.
 
 ## BISA Service
 
@@ -20,10 +20,10 @@ aws_access_key_id = YOUR_ACCESS_KEY_ID
 aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
 ```
 
-Now from each of the services infra/ directories you can perform the following to deploy a service. 
+Now from within each of the services infra/ directories you can perform the following commands to deploy a service. 
 
 `terraform init`
 
 `terraform apply --auto-approve`
 
-Remeber to update the BISA IP from within Payment Service's AppConfig class.
+You must deploy BISA Service first and update the BISA_HOST_IP variable from within Payment Service's AppConfig class, the public IPs will be outputted as part of the terraform apply job. 
