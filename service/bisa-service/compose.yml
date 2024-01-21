@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  dynamodb:
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+    image: "amazon/dynamodb-local:latest"
+    ports:
+      - "8000:8000"
+
+  aws-cli: &aws-cli
+    image: amazon/aws-cli
+    depends_on:
+      - dynamodb
+    restart: on-failure
+    environment:
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+    command: |
+      dynamodb list-tables
+      --endpoint-url http://dynamodb:8000
+      --region dummy
+
+  create-card-table:
+    <<: *aws-cli
+    command: |
+      dynamodb create-table
+      --table-name card-table
+      --attribute-definitions AttributeName=id,AttributeType=S AttributeName=cardNumber,AttributeType=S 
+      --key-schema AttributeName=id,KeyType=HASH 
+      --global-secondary-indexes 'IndexName=CardNumberIndex,KeySchema=[{AttributeName=cardNumber,KeyType=HASH}],Projection={ProjectionType=ALL},ProvisionedThroughput={ReadCapacityUnits=5,WriteCapacityUnits=5}' 
+      --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=10 
+      --endpoint-url http://dynamodb:8000 
+      --region eu-west-1
+
+  batch-write-card-info:
+    <<: *aws-cli
+    depends_on:
+      - create-card-table
+    command: |
+      dynamodb batch-write-item
+      --request-items '{
+        "card-table": [
+          {"PutRequest": {"Item": {"id": {"S": "uuid-1"}, "cardNumber": {"S": "8002 1235 5687 9898"}, "expiryDate": {"S": "12/24"}, "cvv": {"S": "994"}, "balance": {"N": "98.99"}}}},
+          {"PutRequest": {"Item": {"id": {"S": "uuid-2"}, "cardNumber": {"S": "8002 6543 3456 7634"}, "expiryDate": {"S": "02/23"}, "cvv": {"S": "456"}, "balance": {"N": "101.00"}}}},
+          {"PutRequest": {"Item": {"id": {"S": "uuid-3"}, "cardNumber": {"S": "8002 8945 2356 8345"}, "expiryDate": {"S": "02/25"}, "cvv": {"S": "546"}, "balance": {"N": "56.00"}}}},
+          {"PutRequest": {"Item": {"id": {"S": "uuid-4"}, "cardNumber": {"S": "8002 6354 2345 8765"}, "expiryDate": {"S": "06/26"}, "cvv": {"S": "134"}, "balance": {"N": "23.00"}}}}
+        ]
+      }'
+      --endpoint-url http://dynamodb:8000
+      --region eu-west-1;
+
+  scan-card-table:
+    <<: *aws-cli
+    depends_on:
+      - batch-write-card-info
+    command: |
+      dynamodb scan
+      --table-name card-table
+      --endpoint-url http://dynamodb:8000
+      --region eu-west-1

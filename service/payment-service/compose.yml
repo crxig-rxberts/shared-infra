@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  dynamodb:
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+    image: "amazon/dynamodb-local:latest"
+    ports:
+      - "8000:8000"
+
+  aws-cli: &aws-cli
+    image: amazon/aws-cli
+    depends_on:
+      - dynamodb
+    restart: on-failure
+    environment:
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+    command: |
+      dynamodb list-tables
+      --endpoint-url http://dynamodb:8000
+      --region dummy
+
+  create-payments-table:
+    <<: *aws-cli
+    command: |
+      dynamodb create-table
+      --table-name payments
+      --attribute-definitions AttributeName=id,AttributeType=S
+      --key-schema AttributeName=id,KeyType=HASH 
+      --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=10 
+      --endpoint-url http://dynamodb:8000 
+      --region eu-west-1
