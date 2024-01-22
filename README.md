@@ -35,3 +35,5 @@ You must deploy BISA Service first and update the BISA_HOST_IP variable from wit
 Each service has a requirements.txt for dependencies and a compose.yml that can be used to spin up local dynamodb tables by using the following command at a service root.
 
 `docker compose up`
+
+The services run on the same port as they are intended to be seperate, due to this you would be required to migrate one when running both services locally.
