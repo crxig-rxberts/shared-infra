@@ -12,7 +12,9 @@ BISA service replicates a Payment Processor or Bank in that here we store plain 
 
 ## Configuration
 
-To configure the services and deploy locally, you need to set up AWS credentials. Create a `.aws/credentials` file in your user's root directory with the following format:
+Terraform and AWS CLI are required.
+
+To deploy the services, you need to set up AWS credentials. Create a `.aws/credentials` file in your user's root directory with the following format:
 
 ```plaintext
 [default]
@@ -27,3 +29,9 @@ Now from within each of the services infra/ directories you can perform the foll
 `terraform apply --auto-approve`
 
 You must deploy BISA Service first and update the BISA_HOST_IP variable from within Payment Service's AppConfig class, the public IPs will be outputted as part of the terraform apply job. 
+
+## Local Development
+
+Each service has a requirements.txt for dependencies and a compose.yml that can be used to spin up local dynamodb tables by using the following command at a service root.
+
+`docker compose up`
